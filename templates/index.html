@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Your Webpage</title>
+    <script src="https://kit.fontawesome.com/fdf8e81dc9.js" crossorigin="anonymous"></script>
+    <script src="https://unicons.iconscout.com/release/v4.0.8/script/monochrome/bundle.js"></script>
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            color: #333;
+            margin-top: 50px;
+        }
+        form {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #555;
+        }
+        input[type="text"],
+        input[type="url"],
+        input[type="file"],
+        button,
+        .remove-link {
+            width: calc(100% - 22px); /* Subtracting button width and margins */
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px brands #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+            display: block;
+        }
+        .link-container {
+            margin-bottom: 10px;
+        }
+        #addLink {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #addLink:hover {
+            background-color: #0056b3;
+        }
+        button[type="submit"] {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 15px 0;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        button[type="submit"]:hover {
+            background-color: #218838;
+        }
+        .remove-link {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            width: calc(100% - 22px); /* Subtracting button width and margins */
+            margin-top: 10px;
+            display: inline-block;
+        }
+        .remove-link:hover {
+            background-color: #c82333;
+        }
+ 
+    </style>
+</head>
+<body>
+    <h1>Create Your Webpage</h1>
+    <form action="/generate" method="POST" enctype="multipart/form-data">
+        <label for="project_name"><i class="bi bi-diagram-3"></i> Project Name:</label>
+        <input type="text" id="project_name" name="project_name" required><br>
+        <label for="role"><i class="bi bi-diagram-3"></i> Role:</label>
+        <input type="text" id="role" name="role" required><br>
+        <label for="project_description"><i class="bi bi-file-earmark-alt"></i> Project Description (255 characters):</label>
+        <input type="text" id="project_description" name="project_description" maxlength="255" required><br><br>
+
+        <label for="image"><i class="bi bi-image"></i> Upload Image:</label>
+        <input type="file" id="image" name="image" accept="image/*"><br><br>
+
+        <div>
+            <label for="background_color"><i class="bi bi-palette"></i> Choose Background Color:</label><br>
+            <input type="color" id="background_color" name="background_color" checked><br><br>
+        </div>
+
+        <div id="linkInputs">
+            <div class="link-container">
+                <input type="text" id="name1" name="name1" placeholder="Name" required><br>
+                <input type="url" id="url1" name="url1" placeholder="URL" required><br>
+                <select id="icon1" name="icon1" class="form-select">
+                    <option value="logos--facebook">Facebook</option>
+                    <option value="skill-icons--instagram">Instagram</option>
+                    <option value="logos--whatsapp-icon">Whatsapp</option>
+                    <option value="logos--youtube-icon">YouTube</option>
+                    <option value="skill-icons--linkedin">Linkedin</option>
+
+
+
+
+
+
+                    <!-- Add more options for other icons as needed -->
+                </select><br>
+                <button type="button" class="remove-link" onclick="removeLink(this)">Remove Link</button>
+            </div>
+        </div>
+        <button type="button" id="addLink">Add New Link</button><br><br>
+
+        <label for="map_text">Map:</label>
+        <input type="url" id="map_url" name="map_url" required><br>
+
+        <label for="contact"><i class="bi bi-address-book"></i> Upload Contact (vCard file):</label>
+        <input type="file" id="contact" name="contact" accept=".vcf"><br><br>
+
+        <label for="banner"><i class="bi bi-ad"></i> Upload Banner Image:</label>
+        <input type="file" id="banner" name="banner" accept="image/*"><br><br>
+   
+        
+
+        <button type="submit">Generate Webpage</button>
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var linkInputs = document.getElementById('linkInputs');
+            var addButton = document.getElementById('addLink');
+            var index = 2; // Initial index for additional links
+
+            addButton.addEventListener('click', function() {
+                var newDiv = document.createElement('div');
+                newDiv.className = 'link-container';
+                newDiv.innerHTML = `<input type="text" id="name${index}" name="name${index}" placeholder="Name" required><br>
+                                    <input type="url" id="url${index}" name="url${index}" placeholder="URL" required><br>
+                                    <select id="icon${index}" name="icon${index}" class="form-select">
+                                        <option value="logos--facebook">Facebook</option>
+                    <option value="skill-icons--instagram">Instagram</option>
+                    <option value="logos--whatsapp-icon">Whatsapp</option>
+                    <option value="logos--youtube-icon">YouTube</option>
+                    <option value="skill-icons--linkedin">Linkedin</option>
+
+
+                                    </select><br>
+                                    <button type="button" class="remove-link" onclick="removeLink(this)">Remove Link</button>`;
+                linkInputs.appendChild(newDiv);
+                index++;
+            });
+        });
+
+        function removeLink(button) {
+            button.parentNode.remove();
+        }
+    </script>
+</body>
+</html>

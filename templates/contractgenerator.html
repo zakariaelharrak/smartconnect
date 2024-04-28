@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create vCard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+        }
+        h2 {
+            text-align: center;
+            margin-top: 20px;
+        }
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        input[type="file"] {
+            cursor: pointer;
+        }
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h2>Create vCard</h2>
+    <form id="vcardForm">
+        <label for="firstName">First Name:</label>
+        <input type="text" id="firstName" name="firstName" required><br>
+        <label for="lastName">Last Name:</label>
+        <input type="text" id="lastName" name="lastName" required><br>
+        <label for="email">Email:</label>
+        <input type="text" id="email" name="email" required><br>
+        <label for="phone">Phone:</label>
+        <input type="text" id="phone" name="phone" required><br><br>
+        <label for="image">Image (JPG or PNG only):</label>
+        <input type="file" id="image" name="image" accept="image/jpeg, image/png" required><br><br>
+        <button type="button" onclick="createVCard()">Create vCard</button>
+    </form>
+
+    <script>
+        function createVCard() {
+            var firstName = document.getElementById("firstName").value;
+            var lastName = document.getElementById("lastName").value;
+            var email = document.getElementById("email").value;
+            var phone = document.getElementById("phone").value;
+            var imageFile = document.getElementById("image").files[0];
+
+            if (!imageFile) {
+                alert("Please select an image file.");
+                return;
+            }
+
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                var imageBase64 = e.target.result.split(',')[1]; // Get the base64 encoded string of the image
+
+                var vcardContent = `BEGIN:VCARD
+VERSION:3.0
+N:${lastName};${firstName};;;
+FN:${firstName} ${lastName}
+EMAIL;TYPE=INTERNET:${email}
+TEL;TYPE=CELL:${phone}
+PHOTO;ENCODING=b;TYPE=JPEG:${imageBase64}
+END:VCARD`;
+
+                // Create a Blob containing the vCard content
+                var blob = new Blob([vcardContent], { type: 'text/vcard' });
+
+                // Create a link to download the vCard file
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = firstName + '.vcf'; // Set download filename dynamically
+                link.click();
+
+                // Redirect to the index page
+                window.location.href = "/";
+            };
+
+            reader.readAsDataURL(imageFile);
+        }
+    </script>
+</body>
+</html>
