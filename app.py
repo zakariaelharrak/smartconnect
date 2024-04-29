@@ -1,14 +1,10 @@
 from flask import Flask, render_template, request, redirect, abort, send_from_directory, url_for
-from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 
 import os
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
-# Initialize Flask-Login
-login_manager = LoginManager()
-login_manager.init_app(app)
 
 # Directory to store generated HTML files
 HTML_DIR = os.path.join(os.getcwd(), 'html_files')
@@ -43,50 +39,15 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# User class for Flask-Login
-class User(UserMixin):
-    def __init__(self, username, password):
-        self.id = username
-        self.password = password
 
-# Define a dictionary to store admin credentials (change this to a secure database in production)
-users = {'username': 'password'}
-app.config['SECRET_KEY'] = 'your_secret_key_here'
-
-# User loader function for Flask-Login
-@login_manager.user_loader
-def load_user(user_id):
-    if user_id in users:
-        return User(user_id, users[user_id])
-    return None
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        if username in users and users[username] == password:
-            user = User(username, password)
-            login_user(user)
-            return redirect(url_for('index'))
-    return render_template('login.html')
-
-# Logout route
-@app.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for('login'))
 
 # Index route
 @app.route('/')
-@login_required
 def index():
     return render_template('index.html')
 
 # Generate route
 @app.route('/generate', methods=['POST'])
-@login_required
 def generate():
     project_name = request.form['project_name']
     project_description = request.form['project_description']
@@ -154,7 +115,6 @@ def generate():
 
 # Contacts route
 @app.route('/contacts', methods=['POST'])
-@login_required
 def upload_contact():
     if 'file' not in request.files:
         return redirect(request.url)
@@ -195,12 +155,6 @@ def get_banner(filename):
 @app.route('/contractgenerator')
 def contract_generator():
     return render_template('contractgenerator.html', banners=os.listdir(UPLOAD_FOLDER_BANNERS))
-
-# Before request handler to check if user is logged in
-@app.before_request
-def before_request():
-    if not current_user.is_authenticated and request.endpoint not in ['login', 'show_page', 'get_uploaded_image', 'contract_generator', 'get_banner']:
-        return redirect(url_for('login'))
 
 
 if __name__ == '__main__':
